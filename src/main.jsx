@@ -2,88 +2,108 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const chapters = [
-  'من الداخل تبدأ القوة',
-  'الثقة الهادئة',
-  'كاريزما الحضور',
-  'لغة التأثير',
-  'قراءة الناس قبل أن يتكلموا',
-  'الحدود التي تصنع الهيبة',
-  'القيادة قبل المنصب',
-  'النفوذ الخفي',
-  'لا تكن ضحية سهلة',
-  'حين تؤجل حياتك',
+const story = [
+  {
+    img: '/story/inside.jpg',
+    tag: '01',
+    title: 'ابدأ من الداخل',
+    text: 'قبل الكاريزما والثقة، تحتاج بناء داخلي يثبتك وقت الضغط.',
+  },
+  {
+    img: '/story/confidence.jpg',
+    tag: '02',
+    title: 'ثقة هادئة',
+    text: 'ثقة لا تحتاج صوت عالي، ولا تنهار من رأي أو رفض أو مقارنة.',
+  },
+  {
+    img: '/story/influence.jpg',
+    tag: '03',
+    title: 'افهم النفوذ',
+    text: 'تعرف كيف تتحرك الإطارات، التكرار، والندرة داخل عقل الناس.',
+  },
+  {
+    img: '/story/protection.jpg',
+    tag: '04',
+    title: 'احمِ نفسك',
+    text: 'تتعلم تلاحظ الضغط والتلاعب والذنب قبل أن يقودك أحد.',
+  },
 ];
 
-const benefits = [
-  ['تبني ثقة لا تعتمد على رأي الناس', 'تتعلّم كيف تقف من الداخل قبل أن تظهر في الخارج.'],
-  ['تفهم النفوذ والتأثير بوعي', 'تعرف متى تستخدم التأثير ومتى تحمي نفسك منه.'],
-  ['تحسّن حضورك في العلاقات والعمل', 'كلام أوضح، حدود أهدأ، وقيادة بلا استعراض.'],
+const bullets = [
+  'كتاب PDF كامل بتصميم بصري عربي',
+  '280 صفحة و17 فصل عملي',
+  'رسوم وخرائط ذهنية بأسلوب القناة',
+  'مناسب للجوال والقراءة السريعة',
 ];
 
 function App() {
   return (
-    <main>
-      <section className="hero">
-        <div className="heroText">
-          <p className="eyebrow">كتاب عملي في بناء الشخصية والتأثير</p>
-          <h1>قوة الحضور</h1>
-          <p className="subtitle">دليل عملي لبناء الكاريزما والثقة والقيادة والتواصل وفهم النفوذ الخفي دون أن تفقد أخلاقك.</p>
-          <div className="actions">
-            <a className="primary" href="/qowat-alhodoor.pdf" target="_blank" rel="noreferrer">افتح الكتاب PDF</a>
-            <a className="secondary" href="#content">ماذا ستتعلم؟</a>
+    <main className="productPage">
+      <section className="productHero">
+        <div className="badge">كتاب رقمي PDF</div>
+        <div className="coverWrap">
+          <img src="/story/cover.jpg" alt="غلاف كتاب قوة الحضور" />
+        </div>
+        <h1>قوة الحضور</h1>
+        <p className="lead">دليل عملي لبناء الكاريزما والثقة والقيادة والتواصل وفهم النفوذ الخفي دون أن تفقد أخلاقك.</p>
+        <div className="priceCard">
+          <span>السعر</span>
+          <strong>55 ريال</strong>
+        </div>
+      </section>
+
+      <section className="quickInfo" aria-label="مميزات الكتاب">
+        {bullets.map((item) => (
+          <div key={item} className="infoItem">
+            <span>✓</span>
+            <p>{item}</p>
           </div>
-          <div className="stats" aria-label="معلومات الكتاب">
-            <span><strong>280</strong> صفحة</span>
-            <span><strong>17</strong> فصل</span>
-            <span><strong>+100</strong> رسم وشرح بصري</span>
-          </div>
-        </div>
-        <div className="bookCard" aria-label="غلاف كتاب قوة الحضور">
-          <img src="/cover.jpg" alt="غلاف كتاب قوة الحضور" />
-        </div>
+        ))}
       </section>
 
-      <section id="content" className="section">
-        <p className="sectionLabel">لمن هذا الكتاب؟</p>
-        <h2>إذا كنت تريد حضورًا أقوى… لكن بدون تصنّع</h2>
-        <div className="benefits">
-          {benefits.map(([title, desc]) => (
-            <article className="benefit" key={title}>
-              <div className="icon">✦</div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
-            </article>
-          ))}
+      <section className="storyFlow" aria-label="ماذا داخل الكتاب">
+        <div className="sectionHeader">
+          <span>ماذا ستأخذ؟</span>
+          <h2>رحلة واضحة من الداخل إلى التأثير</h2>
         </div>
-      </section>
 
-      <section className="section split">
-        <div>
-          <p className="sectionLabel">الفكرة الأساسية</p>
-          <h2>الحضور ليس صوتًا عاليًا، بل بناء داخلي يظهر في الخارج.</h2>
-        </div>
-        <p className="copy">الكتاب يأخذك من الداخل إلى الخارج: من الثقة والاتزان، إلى اللغة والقيادة، ثم فهم النفوذ الخفي وحماية نفسك من التلاعب. بأسلوب عربي مباشر، وتصميم بصري قريب من هوية فيديوهاتك.</p>
-      </section>
-
-      <section className="section">
-        <p className="sectionLabel">نظرة على الفصول</p>
-        <h2>رحلة كاملة لبناء حضور واضح وهادئ</h2>
-        <div className="chapters">
-          {chapters.map((chapter, index) => (
-            <div className="chapter" key={chapter}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              {chapter}
+        {story.map((card, index) => (
+          <article className="storyCard" key={card.title}>
+            <img src={card.img} alt="" />
+            <div className="storyOverlay">
+              <span className="number">{card.tag}</span>
+              <h3>{card.title}</h3>
+              <p>{card.text}</p>
             </div>
-          ))}
+            {index < story.length - 1 && <div className="connector" aria-hidden="true" />}
+          </article>
+        ))}
+      </section>
+
+      <section className="systemCard">
+        <img src="/story/system.jpg" alt="دوائر الحضور السبع" />
+        <div>
+          <span>الإطار الكامل</span>
+          <h2>دوائر الحضور السبع</h2>
+          <p>الوعي، القوة، الثقة، الكاريزما، التواصل، القيادة، والحماية. كل فصل يخدم دائرة من هذه الدوائر.</p>
         </div>
       </section>
 
-      <section className="cta">
-        <h2>ابدأ قراءة الكتاب الآن</h2>
-        <p>نسخة PDF كاملة بتصميم عربي، خلفية هادئة، ورسوم توضيحية بأسلوب القناة.</p>
-        <a className="primary" href="/qowat-alhodoor.pdf" target="_blank" rel="noreferrer">تحميل / فتح PDF</a>
+      <section id="buy" className="buyBox">
+        <h2>احصل على الكتاب الآن</h2>
+        <p>نسخة PDF كاملة — قراءة فورية بعد الشراء.</p>
+        <div className="buyPrice">55 ريال</div>
+        <a className="buyButton big" href="/qowat-alhodoor.pdf" target="_blank" rel="noreferrer">شراء الكتاب</a>
+        <small>ملاحظة: زر الشراء حاليًا يفتح ملف PDF. أرسل لي رابط الدفع لأربطه مباشرة.</small>
       </section>
+
+      <div className="fixedBuy" role="region" aria-label="شراء الكتاب">
+        <div>
+          <span>قوة الحضور</span>
+          <strong>55 ريال</strong>
+        </div>
+        <a className="buyButton" href="#buy">اشتر الآن</a>
+      </div>
     </main>
   );
 }
