@@ -2,107 +2,143 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const story = [
-  {
-    img: '/story/inside.jpg',
-    tag: '01',
-    title: 'ابدأ من الداخل',
-    text: 'قبل الكاريزما والثقة، تحتاج بناء داخلي يثبتك وقت الضغط.',
-  },
-  {
-    img: '/story/confidence.jpg',
-    tag: '02',
-    title: 'ثقة هادئة',
-    text: 'ثقة لا تحتاج صوت عالي، ولا تنهار من رأي أو رفض أو مقارنة.',
-  },
-  {
-    img: '/story/influence.jpg',
-    tag: '03',
-    title: 'افهم النفوذ',
-    text: 'تعرف كيف تتحرك الإطارات، التكرار، والندرة داخل عقل الناس.',
-  },
-  {
-    img: '/story/protection.jpg',
-    tag: '04',
-    title: 'احمِ نفسك',
-    text: 'تتعلم تلاحظ الضغط والتلاعب والذنب قبل أن يقودك أحد.',
-  },
+const desires = [
+  ['تريد أن تُسمع', 'عندك أفكار، لكنك تريد طريقة تجعل كلامك يصل بوضوح ووزن.'],
+  ['تريد أن تُحترم', 'لا تريد أن تكون الشخص السهل الذي تُؤخذ طيبته كأمر مضمون.'],
+  ['تريد أن تؤثر', 'تريد فهم النفوذ، الإقناع، وقراءة الناس من غير تلاعب رخيص.'],
+  ['تريد علاقات أنجح', 'تريد جاذبية طبيعية، قربًا مريحًا، واحترامًا لا يكسرك ولا يبعد الناس عنك.'],
 ];
 
-const bullets = [
-  'كتاب PDF كامل بتصميم بصري عربي',
-  '280 صفحة و17 فصل عملي',
-  'رسوم وخرائط ذهنية بأسلوب القناة',
-  'مناسب للجوال والقراءة السريعة',
+const path = [
+  ['01', 'ثقة لا تهتز', 'القوة الداخلية، الذكاء العاطفي، الثقة الثابتة، والتخلص من تأجيل حياتك.', '/charisma-web-images/confidence-godlike-no-eyes.png'],
+  ['02', 'هيبة وكلام يُسمع', 'الكاريزما، الكلام المؤثر، قراءة الناس، والحدود التي تصنع الاحترام.', '/charisma-web-images/enter-room-power.png'],
+  ['03', 'قوة التأثير وكشف التلاعب', 'القيادة، النفوذ الخفي، كشف التلاعب، وحماية نفسك من الاستغلال.', '/charisma-web-images/leadership-power.png'],
+  ['04', 'جاذبية وعلاقات ناجحة', 'تغيير صورتك أمام الناس، الصداقة، الجاذبية، وتثبيت نسختك الجديدة.', '/charisma-web-images/relationships-power.png'],
+];
+
+const toc = [
+  'كيف تبني قوتك من الداخل',
+  'كيف تفهم مشاعرك وتضبطها',
+  'كيف تقوّي ثقتك بنفسك',
+  'كيف تتوقف عن تأجيل حياتك',
+  'كيف تصنع كاريزما حقيقية',
+  'كيف تتكلم بطريقة تؤثر',
+  'كيف تقرأ الناس بذكاء',
+  'كيف تجعل الناس يحترمونك',
+  'كيف تقود قبل أن تملك منصبًا',
+  'كيف تفهم النفوذ الخفي',
+  'كيف تكتشف التلاعب النفسي',
+  'كيف تحمي نفسك من الاستغلال',
+  'كيف تغيّر صورتك أمام الناس',
+  'كيف تصنع أصدقاء بسهولة',
+  'كيف تكون أكثر جاذبية في العلاقات',
+  'كيف تثبّت التغيير ولا تعود للقديم',
+];
+
+const outcomes = [
+  'ثقة أهدأ أمام الناس.',
+  'كلام أوضح وأكثر تأثيرًا.',
+  'احترام أكبر من غير قسوة.',
+  'فهم أعمق للنفس والآخرين.',
+  'جاذبية اجتماعية من غير تصنّع.',
 ];
 
 function App() {
   return (
-    <main className="productPage">
-      <section className="productHero">
-        <div className="badge">كتاب رقمي PDF</div>
-        <div className="coverWrap">
-          <img src="/story/cover.jpg" alt="غلاف كتاب قوة الحضور" />
-        </div>
-        <h1>قوة الحضور</h1>
-        <p className="lead">دليل عملي لبناء الكاريزما والثقة والقيادة والتواصل وفهم النفوذ الخفي دون أن تفقد أخلاقك.</p>
-        <div className="priceCard">
-          <span>السعر</span>
-          <strong>55 ريال</strong>
-        </div>
-      </section>
-
-      <section className="quickInfo" aria-label="مميزات الكتاب">
-        {bullets.map((item) => (
-          <div key={item} className="infoItem">
-            <span>✓</span>
-            <p>{item}</p>
+    <main>
+      <section className="hero">
+        <div className="copy">
+          <h1>كاريزما جذابة</h1>
+          <p className="subtitle">أسرار علم النفس للجاذبية والاحترام والقوة الاجتماعية</p>
+          <p className="lead">
+            كتاب عملي يعلمك كيف ترفع قيمتك أمام الناس: تثق بنفسك، تتكلم بطريقة مؤثرة، تضع حدودًا تجعلهم يحترمونك، تفهم أسرار النفس، وتبني جاذبية اجتماعية من غير تصنّع.
+          </p>
+          <div className="actions">
+            <a className="primary" href="#buy">شراء الكتاب — 55 ريال</a>
+            <a className="ghost" href="#path">شاهد محتوى الكتاب</a>
           </div>
-        ))}
+        </div>
+        <div className="coverWrap heroArt">
+          <img src="/charisma-web-images/book-options-channel-style/book-channel-option-04-light-bg.png" alt="صورة منتج كتاب كاريزما جذابة" />
+        </div>
       </section>
 
-      <section className="storyFlow" aria-label="ماذا داخل الكتاب">
-        <div className="sectionHeader">
-          <span>ماذا ستأخذ؟</span>
-          <h2>رحلة واضحة من الداخل إلى التأثير</h2>
+      <section className="pain imageSection">
+        <div>
+          <h2>الكاريزما تغيّر حياتك</h2>
+          <div className="problemGrid">
+            {desires.map(([title, text]) => (
+              <article key={title}>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </article>
+            ))}
+          </div>
         </div>
+        <img className="sideImage" src="/charisma-web-images/charisma-force-godlike.png" alt="قوة الكاريزما" />
+      </section>
 
-        {story.map((card, index) => (
-          <article className="storyCard" key={card.title}>
-            <img src={card.img} alt="" />
-            <div className="storyOverlay">
-              <span className="number">{card.tag}</span>
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
+      <section className="truth">
+        <p>
+          أكيد تعرف شخصًا عندما يدخل المكان ينتبه له الناس، وعندما يتكلم يصمتون ليسمعوه. ليس لأنه الأعلى صوتًا أو الأجمل شكلًا، بل لأن طريقته تقول: أنا واثق، واضح، وأعرف قيمتي.
+        </p>
+        <h2>هذه هي الكاريزما: أن تُشعر الناس بقيمتك قبل أن تشرحها لهم.</h2>
+        <p>
+          ستفهم لماذا تهتز ثقتك، لماذا تشعر بالوحدة رغم وعيك، لماذا يستسهل البعض التعامل معك، وكيف تصبح أكثر تأثيرًا وجاذبية ونجاحًا في علاقاتك وقراراتك.
+        </p>
+      </section>
+
+      <section id="path" className="inside">
+        <h2>الطريق داخل الكتاب</h2>
+        <div className="insideGrid">
+          {path.map(([num, title, text, img]) => (
+            <article key={title}>
+              <img src={img} alt="" />
+              <div>
+                <span>{num}</span>
+                <h3>{title}</h3>
+                <p>{text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="tocSection">
+        <h2>فهرس الكتاب</h2>
+        <div className="tocGrid">
+          {toc.map((item, index) => (
+            <div className="tocItem" key={item}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <p>{item}</p>
             </div>
-            {index < story.length - 1 && <div className="connector" aria-hidden="true" />}
-          </article>
-        ))}
-      </section>
-
-      <section className="systemCard">
-        <img src="/story/system.jpg" alt="دوائر الحضور السبع" />
-        <div>
-          <span>الإطار الكامل</span>
-          <h2>دوائر الحضور السبع</h2>
-          <p>الوعي، القوة، الثقة، الكاريزما، التواصل، القيادة، والحماية. كل فصل يخدم دائرة من هذه الدوائر.</p>
+          ))}
         </div>
       </section>
 
-      <section id="buy" className="buyBox">
-        <h2>احصل على الكتاب الآن</h2>
-        <p>نسخة PDF كاملة — قراءة فورية بعد الشراء.</p>
-        <div className="buyPrice">55 ريال</div>
-        <a className="buyButton big" href="/qowat-alhodoor.pdf" target="_blank" rel="noreferrer">شراء الكتاب</a>
-        <small>ملاحظة: زر الشراء حاليًا يفتح ملف PDF. أرسل لي رابط الدفع لأربطه مباشرة.</small>
+      <section className="outcomes">
+        <h2>ماذا ستأخذ منه؟</h2>
+        <ul>
+          {outcomes.map((item) => <li key={item}>{item}</li>)}
+        </ul>
       </section>
 
-      <div className="fixedBuy" role="region" aria-label="شراء الكتاب">
+      <section id="buy" className="buy">
+        <img className="buyImage" src="/charisma-web-images/cta-godlike-no-book.png" alt="بناء الكاريزما" />
         <div>
-          <span>قوة الحضور</span>
+          <h2>جاهز تبني كاريزمتك؟</h2>
+          <p>نسخة PDF فورية من كتاب <strong>كاريزما جذابة</strong>.</p>
+        </div>
+        <div className="buyCard">
           <strong>55 ريال</strong>
+          <a className="primary" href="/karezma-jathaba-final.pdf" target="_blank" rel="noreferrer">شراء الكتاب</a>
+          <small>للمعاينة محليًا الآن — يمكن ربطه برابط الدفع لاحقًا.</small>
         </div>
-        <a className="buyButton" href="#buy">اشتر الآن</a>
+      </section>
+
+      <div className="fixedBuy">
+        <div><span>كاريزما جذابة</span><strong>55 ريال</strong></div>
+        <a href="#buy">اشتر الآن</a>
       </div>
     </main>
   );
