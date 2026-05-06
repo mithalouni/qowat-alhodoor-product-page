@@ -43,7 +43,26 @@ const outcomes = [
   'جاذبية اجتماعية من غير تصنّع.',
 ];
 
+const DEFAULT_PRODUCT_CONFIG = {
+  productName: 'كاريزما جذابة',
+  amount: 3999,
+  currency: 'sar',
+  currencyCode: 'SAR',
+  priceLabel: '39.99 ريال',
+};
+
 let checkoutBootstrapPromise;
+
+function apiPath(path) {
+  const currentParams = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams();
+  ['country', 'currency'].forEach((key) => {
+    if (currentParams.get(key)) params.set(key, currentParams.get(key));
+  });
+
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
+}
 
 async function readApiJson(response, fallbackMessage) {
   const data = await response.json();
@@ -56,8 +75,8 @@ async function readApiJson(response, fallbackMessage) {
 function warmCheckout() {
   if (!checkoutBootstrapPromise) {
     checkoutBootstrapPromise = Promise.all([
-      fetch('/api/config').then((response) => readApiJson(response, 'تعذر تحميل إعدادات الدفع.')),
-      fetch('/api/create-checkout-session', {
+      fetch(apiPath('/api/config')).then((response) => readApiJson(response, 'تعذر تحميل إعدادات الدفع.')),
+      fetch(apiPath('/api/create-checkout-session'), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({}),
@@ -243,7 +262,7 @@ function CheckoutBox({ onComplete }) {
               throw submitError;
             }
 
-            const intentResponse = await fetch('/api/create-wallet-payment-intent', {
+            const intentResponse = await fetch(apiPath('/api/create-wallet-payment-intent'), {
               method: 'POST',
               headers: { 'content-type': 'application/json' },
               body: JSON.stringify({ email: walletEmail }),
@@ -420,7 +439,7 @@ function SuccessView({ email }) {
   );
 }
 
-function CheckoutPage() {
+function CheckoutPage({ product }) {
   const [isComplete, setIsComplete] = React.useState(() => {
     const params = new URLSearchParams(window.location.search);
     return Boolean(params.get('checkout_session_id') || params.get('payment_intent_id'));
@@ -435,8 +454,8 @@ function CheckoutPage() {
             <div className="checkoutHeader">
               <h1>إتمام الطلب</h1>
               <div className="checkoutOrderLine">
-                <span>كتاب كاريزما جذابة</span>
-                <strong>55 ريال</strong>
+                <span>كتاب {product.productName}</span>
+                <strong>{product.priceLabel}</strong>
               </div>
             </div>
           </>
@@ -447,7 +466,7 @@ function CheckoutPage() {
   );
 }
 
-function LandingPage() {
+function LandingPage({ product }) {
   React.useEffect(() => {
     const warm = () => warmCheckout().catch(resetCheckoutWarmup);
     const idleId = window.requestIdleCallback ? window.requestIdleCallback(warm, { timeout: 1800 }) : window.setTimeout(warm, 800);
@@ -475,7 +494,7 @@ function LandingPage() {
             كتاب عملي يعلمك كيف ترفع قيمتك أمام الناس: تثق بنفسك، تتكلم بطريقة مؤثرة، تضع حدودًا تجعلهم يحترمونك، تفهم أسرار النفس، وتبني جاذبية اجتماعية من غير تصنّع.
           </p>
           <div className="actions">
-            <a className="primary" href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>شراء الكتاب — 55 ريال</a>
+            <a className="primary" href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>شراء الكتاب — {product.priceLabel}</a>
             <a className="ghost" href="#path">شاهد محتوى الكتاب</a>
           </div>
         </div>
@@ -551,14 +570,14 @@ function LandingPage() {
           <p>نسخة PDF فورية من كتاب <strong>كاريزما جذابة</strong>. بعد الدفع يصلك رابط التحميل على بريدك الإلكتروني.</p>
         </div>
         <div className="buyCard">
-          <strong>55 ريال</strong>
+          <strong>{product.priceLabel}</strong>
           <a className="primary" href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>إتمام الشراء</a>
           <small>الدفع داخل نفس الصفحة بدون فتح نافذة جديدة.</small>
         </div>
       </section>
 
       <div className="fixedBuy">
-        <div><span>كاريزما جذابة</span><strong>55 ريال</strong></div>
+        <div><span>كاريزما جذابة</span><strong>{product.priceLabel}</strong></div>
         <a href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>اشتر الآن</a>
       </div>
     </main>
@@ -566,15 +585,27 @@ function LandingPage() {
 }
 
 function App() {
+  const [productConfig, setProductConfig] = React.useState(DEFAULT_PRODUCT_CONFIG);
   const [route, setRoute] = React.useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return window.location.hash === '#checkout' || params.get('checkout_session_id') ? 'checkout' : 'landing';
+    return window.location.hash === '#checkout' || params.get('checkout_session_id') || params.get('payment_intent_id') ? 'checkout' : 'landing';
   });
+
+  React.useEffect(() => {
+    fetch(apiPath('/api/config'))
+      .then((response) => response.json())
+      .then((config) => {
+        if (config?.priceLabel) {
+          setProductConfig({ ...DEFAULT_PRODUCT_CONFIG, ...config });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     function syncRoute() {
       const params = new URLSearchParams(window.location.search);
-      setRoute(window.location.hash === '#checkout' || params.get('checkout_session_id') ? 'checkout' : 'landing');
+      setRoute(window.location.hash === '#checkout' || params.get('checkout_session_id') || params.get('payment_intent_id') ? 'checkout' : 'landing');
     }
 
     window.addEventListener('hashchange', syncRoute);
@@ -590,7 +621,7 @@ function App() {
     return () => document.body.classList.remove('checkoutMode');
   }, [route]);
 
-  return route === 'checkout' ? <CheckoutPage /> : <LandingPage />;
+  return route === 'checkout' ? <CheckoutPage product={productConfig} /> : <LandingPage product={productConfig} />;
 }
 
 createRoot(document.getElementById('root')).render(<App />);

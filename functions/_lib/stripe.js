@@ -1,8 +1,8 @@
 const STRIPE_API_VERSION = '2026-03-25.dahlia';
 
-export async function createPaymentElementCheckoutSession(env, origin, email) {
-  const amount = env.BOOK_PRICE_AMOUNT || '5500';
-  const currency = (env.BOOK_CURRENCY || 'sar').toLowerCase();
+export async function createPaymentElementCheckoutSession(env, origin, email, pricing = {}) {
+  const amount = pricing.amount || env.BOOK_PRICE_AMOUNT || '3999';
+  const currency = (pricing.currency || env.BOOK_CURRENCY || 'sar').toLowerCase();
   const productName = env.BOOK_PRODUCT_NAME || 'كاريزما جذابة';
   const returnUrl = `${origin}/?checkout_session_id={CHECKOUT_SESSION_ID}#checkout`;
 
@@ -35,7 +35,11 @@ export async function createPaymentElementCheckoutSession(env, origin, email) {
 
   body.set('metadata[product]', 'qowat-alhodoor');
   body.set('metadata[delivery]', 'email_download_link');
+  body.set('metadata[country]', pricing.country || '');
+  body.set('metadata[price_label]', pricing.priceLabel || '');
   body.set('payment_intent_data[metadata][product]', 'qowat-alhodoor');
+  body.set('payment_intent_data[metadata][country]', pricing.country || '');
+  body.set('payment_intent_data[metadata][price_label]', pricing.priceLabel || '');
 
   return stripeFetch(env, '/checkout/sessions', {
     method: 'POST',
@@ -43,9 +47,9 @@ export async function createPaymentElementCheckoutSession(env, origin, email) {
   });
 }
 
-export async function createWalletPaymentIntent(env, email) {
-  const amount = env.BOOK_PRICE_AMOUNT || '5500';
-  const currency = (env.BOOK_CURRENCY || 'sar').toLowerCase();
+export async function createWalletPaymentIntent(env, email, pricing = {}) {
+  const amount = pricing.amount || env.BOOK_PRICE_AMOUNT || '3999';
+  const currency = (pricing.currency || env.BOOK_CURRENCY || 'sar').toLowerCase();
   const productName = env.BOOK_PRODUCT_NAME || 'كاريزما جذابة';
   const cleanEmail = String(email || '').trim().toLowerCase();
 
@@ -60,6 +64,8 @@ export async function createWalletPaymentIntent(env, email) {
   body.set('metadata[product]', 'qowat-alhodoor');
   body.set('metadata[delivery]', 'email_download_link');
   body.set('metadata[source]', 'express_wallet');
+  body.set('metadata[country]', pricing.country || '');
+  body.set('metadata[price_label]', pricing.priceLabel || '');
 
   return stripeFetch(env, '/payment_intents', {
     method: 'POST',

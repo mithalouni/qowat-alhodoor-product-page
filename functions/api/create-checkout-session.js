@@ -1,4 +1,5 @@
 import { json, readJson, requireEnv } from '../_lib/http.js';
+import { getPricingForRequest } from '../_lib/pricing.js';
 import { createPaymentElementCheckoutSession } from '../_lib/stripe.js';
 
 export async function onRequestPost({ request, env }) {
@@ -13,7 +14,8 @@ export async function onRequestPost({ request, env }) {
     }
 
     const origin = env.SITE_URL || new URL(request.url).origin;
-    const session = await createPaymentElementCheckoutSession(env, origin, cleanEmail);
+    const pricing = getPricingForRequest(request, env);
+    const session = await createPaymentElementCheckoutSession(env, origin, cleanEmail, pricing);
 
     await env.DB.prepare(`
       INSERT INTO orders (

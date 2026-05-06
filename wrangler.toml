@@ -4,7 +4,7 @@ pages_build_output_dir = "dist"
 
 [vars]
 BOOK_PRODUCT_NAME = "كاريزما جذابة"
-BOOK_PRICE_AMOUNT = "5500"
+BOOK_PRICE_AMOUNT = "3999"
 BOOK_CURRENCY = "sar"
 BOOK_PRICE_ID = ""
 BOOK_PDF_KEY = "karezma-jathaba-final.pdf"
