@@ -3,5 +3,7 @@ dist/
 .DS_Store
 .env
 .env.local
+.dev.vars
+private/
 .vercel/
 .vercel

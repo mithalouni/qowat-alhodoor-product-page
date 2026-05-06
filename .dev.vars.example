@@ -1,0 +1,6 @@
+STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
+STRIPE_SECRET_KEY=sk_test_replace_me
+STRIPE_WEBHOOK_SECRET=whsec_replace_me
+RESEND_API_KEY=re_replace_me
+FROM_EMAIL=noreply@example.com
+SITE_URL=http://127.0.0.1:8788

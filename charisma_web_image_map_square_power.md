@@ -1,0 +1,20 @@
+# Square powerful charisma web images
+
+Style reference: `/Users/ramimithalouni/.pi/agent/skills/tiktok-psych-video-pipeline/assets/reference-flat-vector.png`
+
+Direction: 1:1 square images, dark powerful monumental energy, intimidating confidence, god-like authority, mature, not cute, not childish. No text inside generated section images.
+
+## 01 — Magnetic entrance
+Generate 1 image of in this style: Flat vector illustration, extremely minimal, modern, square 1:1 frame. Orange is the main person. A tall faceless orange figure enters through a huge dark doorway, gray silhouettes on both sides turn toward the figure in silence, sharp orange light cuts across the floor like a throne-room path, dramatic shadows, intimidating confidence, mature god-like charisma, powerful not cute, not childish. Clean gray background with black shadows and orange glow. No photorealism. Absolutely no text, no words, no letters, no numbers, no speech bubbles, no punctuation marks. Like the style of reference image but darker, stronger, more serious. 1:1 square. create image generate now
+
+## 02 — Unshakable confidence
+Generate 1 image of in this style: Flat vector illustration, extremely minimal, modern, square 1:1 frame. Orange is the main person. A monumental faceless orange figure stands still on a black stone platform, gray judgment eyes and shadow hands surround him but are blocked by a hard orange aura, chest glowing like a furnace, calm intimidating power, mature god-like confidence, not smiling, not cute, not childish. Clean gray background with black shadows and orange glow. No photorealism. Absolutely no text, no words, no letters, no numbers, no speech bubbles, no punctuation marks. Like the style of reference image but darker, stronger, more serious. 1:1 square. create image generate now
+
+## 03 — Boundaries and respect
+Generate 1 image of in this style: Flat vector illustration, extremely minimal, modern, square 1:1 frame. Orange is the main person. A powerful faceless orange figure stands inside a glowing orange circular boundary like a divine shield, gray figures outside stop and lower their hands in respect, one gray hand freezes before crossing the boundary, atmosphere of authority, dignity, controlled power, mature, not cute, not childish. Clean gray background with black shadows and orange glow. No photorealism. Absolutely no text, no words, no letters, no numbers, no speech bubbles, no punctuation marks. Like the style of reference image but darker, stronger, more serious. 1:1 square. create image generate now
+
+## 04 — Influence and leadership
+Generate 1 image of in this style: Flat vector illustration, extremely minimal, modern, square 1:1 frame. Orange is the main person. A commanding faceless orange figure stands on a high angular platform, gray crowd below arranged in disciplined lines, orange signal waves radiate from the figure like power, a sharp crown-like aura made only of light above the head, intimidating leadership, god-like authority, not cute, not childish. Clean gray background with black shadows and orange glow. No photorealism. Absolutely no text, no words, no letters, no numbers, no speech bubbles, no punctuation marks. Like the style of reference image but darker, stronger, more serious. 1:1 square. create image generate now
+
+## 05 — Charismatic relationships without chasing
+Generate 1 image of in this style: Flat vector illustration, extremely minimal, modern, square 1:1 frame. Orange is the main person. A calm powerful faceless orange figure stands centered with a strong vertical orange aura, gray figures around are drawn toward the light but keep respectful distance, no romance cliché, no cute hearts, atmosphere of high value, magnetism, emotional control, social attraction, mature and powerful, not cute, not childish. Clean gray background with black shadows and orange glow. No photorealism. Absolutely no text, no words, no letters, no numbers, no speech bubbles, no punctuation marks. Like the style of reference image but darker, stronger, more serious. 1:1 square. create image generate now

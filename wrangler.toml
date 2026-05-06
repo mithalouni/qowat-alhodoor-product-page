@@ -1,0 +1,22 @@
+name = "qowat-alhodoor-product-page"
+compatibility_date = "2026-05-05"
+pages_build_output_dir = "dist"
+
+[vars]
+BOOK_PRODUCT_NAME = "كاريزما جذابة"
+BOOK_PRICE_AMOUNT = "5500"
+BOOK_CURRENCY = "sar"
+BOOK_PRICE_ID = ""
+BOOK_PDF_KEY = "karezma-jathaba-final.pdf"
+STRIPE_API_VERSION = "2026-03-25.dahlia"
+PAYMENT_METHOD_TYPES = "card"
+SITE_URL = "https://leish.shop"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "qowat-alhodoor-orders"
+database_id = "2a8f6a0c-033b-41dd-9d32-caabd450511d"
+
+[[r2_buckets]]
+binding = "BOOK_FILES"
+bucket_name = "qowat-alhodoor-books"
