@@ -9,7 +9,6 @@ BOOK_CURRENCY = "sar"
 BOOK_PRICE_ID = ""
 BOOK_PDF_KEY = "karezma-jathaba-final.pdf"
 STRIPE_API_VERSION = "2026-03-25.dahlia"
-PAYMENT_METHOD_TYPES = "card"
 SITE_URL = "https://leish.shop"
 
 [[d1_databases]]

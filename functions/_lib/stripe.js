@@ -11,6 +11,9 @@ export async function createPaymentElementCheckoutSession(env, origin, email, pr
   body.set('ui_mode', 'elements');
   body.set('return_url', returnUrl);
   body.set('client_reference_id', crypto.randomUUID());
+  if (env.STRIPE_PAYMENT_METHOD_CONFIGURATION) {
+    body.set('payment_method_configuration', env.STRIPE_PAYMENT_METHOD_CONFIGURATION);
+  }
   if (email) {
     body.set('customer_email', email);
   }

@@ -1,6 +1,40 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { init as initPlausible, track as trackPlausible } from '@plausible-analytics/tracker';
 import './styles.css';
+
+function initAnalytics() {
+  if (window.__plausibleInitialized) return;
+  window.__plausibleInitialized = true;
+
+  initPlausible({
+    domain: 'leish.shop',
+    hashBasedRouting: true,
+    logging: false,
+  });
+}
+
+initAnalytics();
+
+const trackedOnceEvents = new Set();
+
+function trackEvent(eventName) {
+  try {
+    trackPlausible(eventName, {});
+  } catch {
+  }
+}
+
+function trackEventOnce(eventName) {
+  if (trackedOnceEvents.has(eventName)) return;
+  trackedOnceEvents.add(eventName);
+  trackEvent(eventName);
+}
+
+function trackBuyClick(location) {
+  trackEvent('Buy CTA Clicked');
+  trackEvent(`Buy CTA Clicked - ${location}`);
+}
 
 const desires = [
   ['تريد أن تُسمع', 'عندك أفكار، لكنك تريد طريقة تجعل كلامك يصل بوضوح ووزن.'],
@@ -10,10 +44,10 @@ const desires = [
 ];
 
 const path = [
-  ['01', 'ثقة لا تهتز', 'القوة الداخلية، الذكاء العاطفي، الثقة الثابتة، والتخلص من تأجيل حياتك.', '/charisma-web-images/confidence-godlike-no-eyes.png'],
-  ['02', 'هيبة وكلام يُسمع', 'الكاريزما، الكلام المؤثر، قراءة الناس، والحدود التي تصنع الاحترام.', '/charisma-web-images/enter-room-power.png'],
-  ['03', 'قوة التأثير وكشف التلاعب', 'القيادة، النفوذ الخفي، كشف التلاعب، وحماية نفسك من الاستغلال.', '/charisma-web-images/leadership-power.png'],
-  ['04', 'جاذبية وعلاقات ناجحة', 'تغيير صورتك أمام الناس، الصداقة، الجاذبية، وتثبيت نسختك الجديدة.', '/charisma-web-images/relationships-power.png'],
+  ['01', 'ثقة لا تهتز', 'القوة الداخلية، الذكاء العاطفي، الثقة الثابتة، والتخلص من تأجيل حياتك.', '/charisma-web-images/confidence-godlike-no-eyes.webp'],
+  ['02', 'هيبة وكلام يُسمع', 'الكاريزما، الكلام المؤثر، قراءة الناس، والحدود التي تصنع الاحترام.', '/charisma-web-images/enter-room-power.webp'],
+  ['03', 'قوة التأثير وكشف التلاعب', 'القيادة، النفوذ الخفي، كشف التلاعب، وحماية نفسك من الاستغلال.', '/charisma-web-images/leadership-power.webp'],
+  ['04', 'جاذبية وعلاقات ناجحة', 'تغيير صورتك أمام الناس، الصداقة، الجاذبية، وتثبيت نسختك الجديدة.', '/charisma-web-images/relationships-power.webp'],
 ];
 
 const toc = [
@@ -106,13 +140,67 @@ async function fetchPaidEmail(params) {
   return data.email || '';
 }
 
-function getApplePayAvailability() {
-  try {
-    if (typeof window.ApplePaySession !== 'function') return false;
-    return window.ApplePaySession.canMakePayments();
-  } catch {
-    return false;
-  }
+function detectTikTokBrowser() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('tiktok') === '1') return true;
+
+  const userAgent = `${navigator.userAgent || ''} ${navigator.vendor || ''}`.toLowerCase();
+  return /tiktok|musical_ly|bytedance|aweme|ttwebview|zhiliaoapp|snssdk/.test(userAgent);
+}
+
+function ApplePayMark() {
+  return (
+    <span className="applePayMark" aria-label="Apple Pay">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.08-.46-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 8.95 7.31c1.32.07 2.24.72 3.02.78 1.16-.24 2.27-.93 3.57-.84 1.56.13 2.73.74 3.51 1.88-3.22 1.93-2.46 6.18.5 7.37-.59 1.55-1.35 3.09-2.5 3.78ZM11.85 7.03c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z" />
+      </svg>
+      <span>Pay</span>
+    </span>
+  );
+}
+
+function GooglePayMark() {
+  return (
+    <span className="googlePayMark" aria-label="Google Pay">
+      <svg viewBox="0 0 18 18" aria-hidden="true">
+        <path fill="#4285f4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.08-1.8 2.72v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.62Z" />
+        <path fill="#34a853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33C2.44 15.98 5.48 18 9 18Z" />
+        <path fill="#fbbc05" d="M3.96 10.71A5.42 5.42 0 0 1 3.68 9c0-.59.1-1.17.28-1.71V4.96H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.04l3-2.33Z" />
+        <path fill="#ea4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3 2.33C4.67 5.17 6.66 3.58 9 3.58Z" />
+      </svg>
+      <span>Pay</span>
+    </span>
+  );
+}
+
+function TikTokWalletFallback({ onClick }) {
+  return (
+    <div className="tiktokWalletFallback">
+      <button className="walletFallbackButton apple" type="button" onClick={onClick}>
+        <span>دفع الحساب باستخدام</span>
+        <ApplePayMark />
+      </button>
+      <button className="walletFallbackButton google" type="button" onClick={onClick}>
+        <span>إتمام الدفع باستخدام</span>
+        <GooglePayMark />
+      </button>
+    </div>
+  );
+}
+
+function TikTokOpenBrowserModal({ onClose }) {
+  return (
+    <div className="tiktokModalOverlay" role="presentation" onClick={onClose}>
+      <div className="tiktokGuideArrow" aria-hidden="true">↗</div>
+      <div className="tiktokModal" role="dialog" aria-modal="true" aria-labelledby="tiktok-modal-title" onClick={(event) => event.stopPropagation()}>
+        <div className="tiktokMenuButton" aria-hidden="true">⋯</div>
+        <h2 id="tiktok-modal-title">افتح الصفحة في المتصفح</h2>
+        <p>Apple Pay و Google Pay لا يعملان داخل متصفح TikTok.</p>
+        <p>اضغط زر الثلاث نقاط في أعلى الزاوية، ثم اختر <strong>Open in browser</strong>.</p>
+        <button type="button" onClick={onClose}>حسنًا</button>
+      </div>
+    </div>
+  );
 }
 
 function CheckoutBox({ onComplete }) {
@@ -122,14 +210,27 @@ function CheckoutBox({ onComplete }) {
   const [message, setMessage] = React.useState('');
   const [expressReady, setExpressReady] = React.useState(false);
   const [expressChecked, setExpressChecked] = React.useState(false);
-  const [walletDebug, setWalletDebug] = React.useState('');
+  const [showTikTokHelp, setShowTikTokHelp] = React.useState(false);
   const checkoutRef = React.useRef(null);
   const walletElementsRef = React.useRef(null);
   const expressElementRef = React.useRef(null);
   const paymentElementRef = React.useRef(null);
   const actionsRef = React.useRef(null);
+  const isTikTokBrowser = React.useMemo(() => detectTikTokBrowser(), []);
   const canUseExpressCheckout = expressReady && status !== 'confirming' && status !== 'complete';
-  const showWalletDebug = new URLSearchParams(window.location.search).get('wallet_debug') === '1';
+  const canShowTikTokWalletFallback = isTikTokBrowser && status !== 'confirming' && status !== 'complete';
+
+  React.useEffect(() => {
+    if (canShowTikTokWalletFallback) {
+      trackEventOnce('TikTok Wallet Fallback Shown');
+    }
+  }, [canShowTikTokWalletFallback]);
+
+  React.useEffect(() => {
+    if (showTikTokHelp) {
+      trackEvent('TikTok Open Browser Modal Viewed');
+    }
+  }, [showTikTokHelp]);
 
   React.useEffect(() => {
     onComplete?.(status === 'complete');
@@ -139,6 +240,7 @@ function CheckoutBox({ onComplete }) {
     const params = new URLSearchParams(window.location.search);
     if (params.get('checkout_session_id') || params.get('payment_intent_id')) {
       setStatus('complete');
+      trackEventOnce('Payment Succeeded');
       fetchPaidEmail(params)
         .then((resolvedEmail) => setPaidEmail(resolvedEmail))
         .catch(() => {});
@@ -168,35 +270,43 @@ function CheckoutBox({ onComplete }) {
             },
           },
         });
-        const expressCheckoutElement = walletElements.create('expressCheckout', {
-          buttonHeight: 48,
-          buttonType: {
-            applePay: 'check-out',
-            googlePay: 'checkout',
-          },
-          layout: {
-            maxColumns: 1,
-            maxRows: 2,
-            overflow: 'auto',
-          },
-          paymentMethods: {
-            applePay: 'always',
-            googlePay: 'always',
-            link: 'never',
-            paypal: 'never',
-            amazonPay: 'never',
-            klarna: 'never',
-          },
-          emailRequired: true,
-          billingAddressRequired: false,
-          lineItems: [
-            {
-              name: config.productName,
-              amount: Number(config.amount),
+        const expressCheckoutElement = !isTikTokBrowser
+          ? walletElements.create('expressCheckout', {
+            buttonHeight: 48,
+            buttonType: {
+              googlePay: 'checkout',
+              applePay: 'check-out',
             },
-          ],
-        });
-        const checkout = stripe.initCheckoutElementsSdk({
+            buttonTheme: {
+              googlePay: 'black',
+              applePay: 'black',
+            },
+            paymentMethodOrder: ['googlePay', 'applePay'],
+            layout: {
+              maxColumns: 1,
+              maxRows: 2,
+              overflow: 'auto',
+            },
+            paymentMethods: {
+              googlePay: 'always',
+              applePay: 'always',
+              link: 'never',
+              paypal: 'never',
+              amazonPay: 'never',
+              klarna: 'never',
+            },
+            emailRequired: true,
+            billingAddressRequired: false,
+            lineItems: [
+              {
+                name: config.productName,
+                amount: Number(config.amount),
+              },
+            ],
+          })
+          : null;
+        const initCheckout = stripe.initCheckoutElementsSdk || stripe.initCheckout;
+        const checkout = initCheckout.call(stripe, {
           clientSecret: session.clientSecret,
         });
         const paymentElement = checkout.createPaymentElement({
@@ -224,95 +334,92 @@ function CheckoutBox({ onComplete }) {
         await new Promise((resolve) => requestAnimationFrame(resolve));
         if (cancelled) return;
 
-        expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
-          const debugPayload = {
-            availablePaymentMethods: availablePaymentMethods || null,
-            isSecureContext: window.isSecureContext,
-            hasPaymentRequest: typeof window.PaymentRequest === 'function',
-            hasApplePaySession: typeof window.ApplePaySession === 'function',
-            appleCanMakePayments: getApplePayAvailability(),
-            userAgent: navigator.userAgent,
-          };
-          console.info('Stripe express checkout payment methods:', debugPayload);
-          const hasExpressMethod = availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean);
-          if (!cancelled) {
-            setExpressChecked(true);
-            setExpressReady(Boolean(hasExpressMethod));
-            setWalletDebug(JSON.stringify(debugPayload, null, 2));
-          }
-        });
-        expressCheckoutElement.on('confirm', async (event) => {
-          try {
-            setStatus('confirming');
-            setMessage('');
+        if (expressCheckoutElement) {
+          expressCheckoutElement.on('ready', ({ availablePaymentMethods }) => {
+            const hasExpressMethod = availablePaymentMethods && Object.values(availablePaymentMethods).some(Boolean);
+            if (!cancelled) {
+              setExpressChecked(true);
+              setExpressReady(Boolean(hasExpressMethod));
+            }
+          });
+          expressCheckoutElement.on('confirm', async (event) => {
+            try {
+              setStatus('confirming');
+              setMessage('');
+              trackEvent('Payment Submitted');
 
-            const walletEmail = event.billingDetails?.email || '';
-            if (!walletEmail || !walletEmail.includes('@')) {
+              const walletEmail = event.billingDetails?.email || '';
+              if (!walletEmail || !walletEmail.includes('@')) {
+                event.paymentFailed?.({
+                  reason: 'fail',
+                  message: 'نحتاج بريدك الإلكتروني حتى نرسل رابط تحميل الكتاب.',
+                });
+                setStatus('ready');
+                setMessage('لم يصل البريد الإلكتروني من المحفظة. أضف بريدًا داخل Apple Pay أو Google Pay وحاول مرة ثانية.');
+                return;
+              }
+
+              const { error: submitError } = await walletElements.submit();
+              if (submitError) {
+                throw submitError;
+              }
+
+              const intentResponse = await fetch(apiPath('/api/create-wallet-payment-intent'), {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ email: walletEmail }),
+              });
+              const intent = await intentResponse.json();
+              if (!intentResponse.ok) {
+                throw new Error(intent.error || 'تعذر تجهيز الدفع السريع.');
+              }
+
+              const billingDetails = {
+                email: walletEmail,
+                name: event.billingDetails?.name || undefined,
+                phone: event.billingDetails?.phone || undefined,
+                address: event.billingDetails?.address || undefined,
+              };
+              const { error } = await stripe.confirmPayment({
+                elements: walletElements,
+                clientSecret: intent.clientSecret,
+                confirmParams: {
+                  return_url: `${window.location.origin}/?payment_intent_id=${intent.paymentIntentId}#checkout`,
+                  receipt_email: walletEmail,
+                  payment_method_data: {
+                    billing_details: billingDetails,
+                  },
+                },
+                redirect: 'if_required',
+              });
+
+              if (error) {
+                throw error;
+              }
+
+              paymentElementRef.current?.destroy();
+              paymentElementRef.current = null;
+              expressElementRef.current?.destroy();
+              expressElementRef.current = null;
+              setPaidEmail(walletEmail);
+              setStatus('complete');
+              trackEvent('Payment Succeeded');
+              setMessage('تم الدفع بنجاح. سيرسل رابط تحميل الكتاب إلى بريدك الإلكتروني خلال لحظات.');
+            } catch (error) {
               event.paymentFailed?.({
                 reason: 'fail',
-                message: 'نحتاج بريدك الإلكتروني حتى نرسل رابط تحميل الكتاب.',
+                message: error.message || 'تعذر إتمام الدفع السريع.',
               });
               setStatus('ready');
-              setMessage('لم يصل البريد الإلكتروني من المحفظة. أضف بريدًا داخل Apple Pay أو Google Pay وحاول مرة ثانية.');
-              return;
+              trackEvent('Payment Failed');
+              setMessage(error.message || 'تعذر إتمام الدفع السريع.');
             }
+          });
+        } else if (!cancelled) {
+          setExpressChecked(true);
+        }
 
-            const { error: submitError } = await walletElements.submit();
-            if (submitError) {
-              throw submitError;
-            }
-
-            const intentResponse = await fetch(apiPath('/api/create-wallet-payment-intent'), {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({ email: walletEmail }),
-            });
-            const intent = await intentResponse.json();
-            if (!intentResponse.ok) {
-              throw new Error(intent.error || 'تعذر تجهيز الدفع السريع.');
-            }
-
-            const billingDetails = {
-              email: walletEmail,
-              name: event.billingDetails?.name || undefined,
-              phone: event.billingDetails?.phone || undefined,
-              address: event.billingDetails?.address || undefined,
-            };
-            const { error } = await stripe.confirmPayment({
-              elements: walletElements,
-              clientSecret: intent.clientSecret,
-              confirmParams: {
-                return_url: `${window.location.origin}/?payment_intent_id=${intent.paymentIntentId}#checkout`,
-                receipt_email: walletEmail,
-                payment_method_data: {
-                  billing_details: billingDetails,
-                },
-              },
-              redirect: 'if_required',
-            });
-
-            if (error) {
-              throw error;
-            }
-
-            paymentElementRef.current?.destroy();
-            paymentElementRef.current = null;
-            expressElementRef.current?.destroy();
-            expressElementRef.current = null;
-            setPaidEmail(walletEmail);
-            setStatus('complete');
-            setMessage('تم الدفع بنجاح. سيرسل رابط تحميل الكتاب إلى بريدك الإلكتروني خلال لحظات.');
-          } catch (error) {
-            event.paymentFailed?.({
-              reason: 'fail',
-              message: error.message || 'تعذر إتمام الدفع السريع.',
-            });
-            setStatus('ready');
-            setMessage(error.message || 'تعذر إتمام الدفع السريع.');
-          }
-        });
-
-        expressCheckoutElement.mount('#express-checkout-element');
+        expressCheckoutElement?.mount('#express-checkout-element');
         paymentElement.mount('#payment-element');
 
         const loadedActions = await checkout.loadActions();
@@ -328,6 +435,7 @@ function CheckoutBox({ onComplete }) {
         paymentElementRef.current = paymentElement;
         actionsRef.current = loadedActions.actions;
         setStatus('ready');
+        trackEventOnce('Payment Form Ready');
       } catch (error) {
         if (!cancelled) {
           setStatus('error');
@@ -344,7 +452,7 @@ function CheckoutBox({ onComplete }) {
       paymentElementRef.current?.destroy();
       walletElementsRef.current = null;
     };
-  }, []);
+  }, [isTikTokBrowser]);
 
   async function confirmPayment(event) {
     event.preventDefault();
@@ -362,6 +470,7 @@ function CheckoutBox({ onComplete }) {
 
     setStatus('confirming');
     setMessage('');
+    trackEvent('Payment Submitted');
 
     try {
       const emailResult = await actionsRef.current.updateEmail(cleanEmail);
@@ -383,13 +492,25 @@ function CheckoutBox({ onComplete }) {
       paymentElementRef.current = null;
       setPaidEmail(cleanEmail);
       setStatus('complete');
+      trackEvent('Payment Succeeded');
       setMessage('تم الدفع بنجاح. سيرسل رابط تحميل الكتاب إلى بريدك الإلكتروني خلال لحظات.');
     } catch (error) {
       setStatus('ready');
+      trackEvent('Payment Failed');
       setMessage(error.message || 'تعذر إتمام الدفع. تحقق من بيانات البطاقة وحاول مرة ثانية.');
       resetCheckoutWarmup();
     }
   }
+
+  const openTikTokHelp = React.useCallback(() => {
+    trackEvent('TikTok Wallet Fallback Clicked');
+    setShowTikTokHelp(true);
+  }, []);
+
+  const closeTikTokHelp = React.useCallback(() => {
+    trackEvent('TikTok Open Browser Modal Closed');
+    setShowTikTokHelp(false);
+  }, []);
 
   if (status === 'complete') {
     return <SuccessView email={paidEmail || email.trim()} />;
@@ -406,11 +527,11 @@ function CheckoutBox({ onComplete }) {
 
         <div className="checkoutSectionTitle">الدفع</div>
         {status === 'loading' && <div className="paymentLoading">جاري تحميل نموذج الدفع...</div>}
+        {canShowTikTokWalletFallback && <TikTokWalletFallback onClick={openTikTokHelp} />}
         <div className={canUseExpressCheckout ? 'expressCheckout ready' : expressChecked ? 'expressCheckout unavailable' : 'expressCheckout'}>
           <div id="express-checkout-element" />
         </div>
-        {showWalletDebug && walletDebug && <pre className="walletDebug" dir="ltr">{walletDebug}</pre>}
-        {canUseExpressCheckout && <div className="checkoutDivider"><span>أو ادفع بالبطاقة</span></div>}
+        {(canUseExpressCheckout || canShowTikTokWalletFallback) && <div className="checkoutDivider"><span>أو ادفع بالبطاقة</span></div>}
         <div id="payment-element" />
 
         {message && <p className={status === 'complete' ? 'checkoutSuccess' : 'checkoutMessage'}>{message}</p>}
@@ -419,6 +540,7 @@ function CheckoutBox({ onComplete }) {
           {status === 'confirming' ? 'جاري تأكيد الدفع...' : 'ادفع الآن'}
         </button>
       </form>
+      {showTikTokHelp && <TikTokOpenBrowserModal onClose={closeTikTokHelp} />}
     </div>
   );
 }
@@ -445,16 +567,29 @@ function CheckoutPage({ product }) {
     return Boolean(params.get('checkout_session_id') || params.get('payment_intent_id'));
   });
 
+  React.useEffect(() => {
+    trackEventOnce('Checkout Viewed');
+  }, []);
+
   return (
     <main className="checkoutPage">
       <section className={isComplete ? 'checkoutPanel successPanel' : 'checkoutPanel'}>
         {!isComplete && (
           <>
-            <a className="backLink" href="#">العودة للصفحة</a>
             <div className="checkoutHeader">
-              <h1>إتمام الطلب</h1>
+              <div className="checkoutTitleRow">
+                <a className="checkoutBackIcon" href="#" aria-label="العودة للصفحة">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </a>
+                <h1>إتمام الطلب</h1>
+              </div>
               <div className="checkoutOrderLine">
-                <span>كتاب {product.productName}</span>
+                <div className="checkoutOrderProduct">
+                  <img className="checkoutOrderThumb" src="/charisma-web-images/book-options-channel-style/book-channel-option-04.webp" alt="" />
+                  <span>كتاب {product.productName} الإلكتروني</span>
+                </div>
                 <strong>{product.priceLabel}</strong>
               </div>
             </div>
@@ -467,7 +602,14 @@ function CheckoutPage({ product }) {
 }
 
 function LandingPage({ product }) {
+  const [showStickyBuy, setShowStickyBuy] = React.useState(false);
+  const painRef = React.useRef(null);
+  const insideRef = React.useRef(null);
+  const outcomesRef = React.useRef(null);
+  const buyRef = React.useRef(null);
+
   React.useEffect(() => {
+    trackEventOnce('Landing Viewed');
     const warm = () => warmCheckout().catch(resetCheckoutWarmup);
     const idleId = window.requestIdleCallback ? window.requestIdleCallback(warm, { timeout: 1800 }) : window.setTimeout(warm, 800);
 
@@ -480,8 +622,78 @@ function LandingPage({ product }) {
     };
   }, []);
 
+  React.useEffect(() => {
+    function updateScrollDepth() {
+      const root = document.documentElement;
+      const scrollableHeight = root.scrollHeight - window.innerHeight;
+      const progress = scrollableHeight <= 0 ? 1 : (window.scrollY + window.innerHeight) / root.scrollHeight;
+
+      if (progress >= 0.5) trackEventOnce('Landing Scroll 50');
+      if (progress >= 0.9) trackEventOnce('Landing Scroll 90');
+    }
+
+    updateScrollDepth();
+    window.addEventListener('scroll', updateScrollDepth, { passive: true });
+    window.addEventListener('resize', updateScrollDepth);
+    return () => {
+      window.removeEventListener('scroll', updateScrollDepth);
+      window.removeEventListener('resize', updateScrollDepth);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!('IntersectionObserver' in window)) return undefined;
+
+    const trackedSections = new Map([
+      [painRef.current, 'Section Viewed - Charisma Changes Life'],
+      [insideRef.current, 'Section Viewed - What You Learn'],
+      [outcomesRef.current, 'Section Viewed - Outcomes'],
+      [buyRef.current, 'Section Viewed - Bottom CTA'],
+    ].filter(([node]) => Boolean(node)));
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const eventName = trackedSections.get(entry.target);
+        if (!eventName) return;
+        trackEventOnce(eventName);
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.35 });
+
+    trackedSections.forEach((eventName, node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+
   const warmPayment = React.useCallback(() => {
     warmCheckout().catch(resetCheckoutWarmup);
+  }, []);
+
+  React.useEffect(() => {
+    let frameId = 0;
+
+    function updateStickyBuy() {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        const painSection = painRef.current;
+        const buySection = buyRef.current;
+        if (!painSection || !buySection) return;
+
+        const hasReachedPain = painSection.getBoundingClientRect().top <= window.innerHeight * 0.45;
+        const hidePoint = window.innerWidth <= 900 ? window.innerHeight * 0.38 : window.innerHeight * 0.82;
+        const beforeBuyCta = buySection.getBoundingClientRect().top > hidePoint;
+        setShowStickyBuy(hasReachedPain && beforeBuyCta);
+      });
+    }
+
+    updateStickyBuy();
+    window.addEventListener('scroll', updateStickyBuy, { passive: true });
+    window.addEventListener('resize', updateStickyBuy);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', updateStickyBuy);
+      window.removeEventListener('resize', updateStickyBuy);
+    };
   }, []);
 
   return (
@@ -491,19 +703,18 @@ function LandingPage({ product }) {
           <h1>كاريزما جذابة</h1>
           <p className="subtitle">أسرار علم النفس للجاذبية والاحترام والقوة الاجتماعية</p>
           <p className="lead">
-            كتاب عملي يعلمك كيف ترفع قيمتك أمام الناس: تثق بنفسك، تتكلم بطريقة مؤثرة، تضع حدودًا تجعلهم يحترمونك، تفهم أسرار النفس، وتبني جاذبية اجتماعية من غير تصنّع.
+            كتاب عملي يعلمك كيف ترفع قيمتك أمام الناس: تثق بنفسك، تتكلم بطريقة مؤثرة، تكسب احترامهم، تفهم أسرار النفس، وتبني جاذبية اجتماعية من غير تصنّع.
           </p>
           <div className="actions">
-            <a className="primary" href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>شراء الكتاب — {product.priceLabel}</a>
-            <a className="ghost" href="#path">شاهد محتوى الكتاب</a>
+            <a className="primary" href="#checkout" onClick={() => trackBuyClick('Hero')} onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>شراء الكتاب — {product.priceLabel}</a>
           </div>
         </div>
         <div className="coverWrap heroArt">
-          <img src="/charisma-web-images/book-options-channel-style/book-channel-option-04-light-bg.png" alt="صورة منتج كتاب كاريزما جذابة" />
+          <img src="/charisma-web-images/book-options-channel-style/book-channel-option-04-light-bg.webp" alt="صورة منتج كتاب كاريزما جذابة" />
         </div>
       </section>
 
-      <section className="pain imageSection">
+      <section ref={painRef} className="pain imageSection">
         <div>
           <h2>الكاريزما تغيّر حياتك</h2>
           <div className="problemGrid">
@@ -515,21 +726,21 @@ function LandingPage({ product }) {
             ))}
           </div>
         </div>
-        <img className="sideImage" src="/charisma-web-images/charisma-force-godlike.png" alt="قوة الكاريزما" />
+        <img className="sideImage" src="/charisma-web-images/charisma-force-godlike.webp" alt="قوة الكاريزما" />
       </section>
 
       <section className="truth">
         <p>
           أكيد تعرف شخصًا عندما يدخل المكان ينتبه له الناس، وعندما يتكلم يصمتون ليسمعوه. ليس لأنه الأعلى صوتًا أو الأجمل شكلًا، بل لأن طريقته تقول: أنا واثق، واضح، وأعرف قيمتي.
         </p>
-        <h2>هذه هي الكاريزما: أن تُشعر الناس بقيمتك قبل أن تشرحها لهم.</h2>
+        <h2>الكاريزما هي مزيج من الثقة، الذكاء الاجتماعي، وطريقة الكلام التي تجعل الناس ينجذبون لك.</h2>
         <p>
           ستفهم لماذا تهتز ثقتك، لماذا تشعر بالوحدة رغم وعيك، لماذا يستسهل البعض التعامل معك، وكيف تصبح أكثر تأثيرًا وجاذبية ونجاحًا في علاقاتك وقراراتك.
         </p>
       </section>
 
-      <section id="path" className="inside">
-        <h2>الطريق داخل الكتاب</h2>
+      <section id="path" ref={insideRef} className="inside">
+        <h2>ماذا ستتعلم؟</h2>
         <div className="insideGrid">
           {path.map(([num, title, text, img]) => (
             <article key={title}>
@@ -556,29 +767,28 @@ function LandingPage({ product }) {
         </div>
       </section>
 
-      <section className="outcomes">
-        <h2>ماذا ستأخذ منه؟</h2>
+      <section ref={outcomesRef} className="outcomes">
+        <h2>خلّهم يتعلقون بحضورك</h2>
         <ul>
           {outcomes.map((item) => <li key={item}>{item}</li>)}
         </ul>
       </section>
 
-      <section id="buy" className="buy">
-        <img className="buyImage" src="/charisma-web-images/cta-godlike-no-book.png" alt="بناء الكاريزما" />
+      <section id="buy" ref={buyRef} className="buy">
+        <img className="buyImage" src="/charisma-web-images/cta-godlike-no-book.webp" alt="بناء الكاريزما" />
         <div>
           <h2>جاهز تبني كاريزمتك؟</h2>
           <p>نسخة PDF فورية من كتاب <strong>كاريزما جذابة</strong>. بعد الدفع يصلك رابط التحميل على بريدك الإلكتروني.</p>
         </div>
         <div className="buyCard">
           <strong>{product.priceLabel}</strong>
-          <a className="primary" href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>إتمام الشراء</a>
-          <small>الدفع داخل نفس الصفحة بدون فتح نافذة جديدة.</small>
+          <a className="primary" href="#checkout" onClick={() => trackBuyClick('Bottom CTA')} onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>إتمام الشراء</a>
         </div>
       </section>
 
-      <div className="fixedBuy">
-        <div><span>كاريزما جذابة</span><strong>{product.priceLabel}</strong></div>
-        <a href="#checkout" onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>اشتر الآن</a>
+      <div className={showStickyBuy ? 'fixedBuy show' : 'fixedBuy'}>
+        <div><strong>{product.priceLabel}</strong></div>
+        <a href="#checkout" onClick={() => { trackBuyClick('Sticky'); trackEvent('Sticky CTA Clicked'); }} onPointerEnter={warmPayment} onFocus={warmPayment} onTouchStart={warmPayment}>اشتري الكتاب</a>
       </div>
     </main>
   );
