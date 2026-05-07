@@ -150,6 +150,16 @@ function detectTikTokBrowser() {
 
 const CHECKOUT_RESUME_MESSAGE = 'LEISH_CHECKOUT_RESUME_CHECKOUT';
 
+function shouldRouteToCheckout() {
+  const params = new URLSearchParams(window.location.search);
+  return (
+    window.location.hash === '#checkout'
+    || params.get('checkout') === '1'
+    || params.get('checkout_session_id')
+    || params.get('payment_intent_id')
+  );
+}
+
 function isEmbeddedPage() {
   try {
     return window.self !== window.top;
@@ -167,6 +177,8 @@ function checkoutResumeUrl() {
     'redirect_status',
     'tiktok',
   ].forEach((key) => url.searchParams.delete(key));
+  url.searchParams.set('checkout', '1');
+  url.searchParams.set('open_browser', '1');
   url.hash = 'checkout';
   return url.toString();
 }
@@ -245,13 +257,16 @@ function CheckoutBox({ onComplete }) {
   const [message, setMessage] = React.useState('');
   const [expressReady, setExpressReady] = React.useState(false);
   const [expressChecked, setExpressChecked] = React.useState(false);
-  const [showTikTokHelp, setShowTikTokHelp] = React.useState(false);
+  const isTikTokBrowser = React.useMemo(() => detectTikTokBrowser(), []);
+  const [showTikTokHelp, setShowTikTokHelp] = React.useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return isTikTokBrowser && params.get('open_browser') === '1';
+  });
   const checkoutRef = React.useRef(null);
   const walletElementsRef = React.useRef(null);
   const expressElementRef = React.useRef(null);
   const paymentElementRef = React.useRef(null);
   const actionsRef = React.useRef(null);
-  const isTikTokBrowser = React.useMemo(() => detectTikTokBrowser(), []);
   const canUseExpressCheckout = expressReady && status !== 'confirming' && status !== 'complete';
   const canShowTikTokWalletFallback = isTikTokBrowser && status !== 'confirming' && status !== 'complete';
 
@@ -832,10 +847,7 @@ function LandingPage({ product }) {
 
 function App() {
   const [productConfig, setProductConfig] = React.useState(DEFAULT_PRODUCT_CONFIG);
-  const [route, setRoute] = React.useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return window.location.hash === '#checkout' || params.get('checkout_session_id') || params.get('payment_intent_id') ? 'checkout' : 'landing';
-  });
+  const [route, setRoute] = React.useState(() => shouldRouteToCheckout() ? 'checkout' : 'landing');
 
   React.useEffect(() => {
     fetch(apiPath('/api/config'))
@@ -850,8 +862,7 @@ function App() {
 
   React.useEffect(() => {
     function syncRoute() {
-      const params = new URLSearchParams(window.location.search);
-      setRoute(window.location.hash === '#checkout' || params.get('checkout_session_id') || params.get('payment_intent_id') ? 'checkout' : 'landing');
+      setRoute(shouldRouteToCheckout() ? 'checkout' : 'landing');
     }
 
     window.addEventListener('hashchange', syncRoute);
