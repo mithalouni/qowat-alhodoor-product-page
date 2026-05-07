@@ -148,6 +148,41 @@ function detectTikTokBrowser() {
   return /tiktok|musical_ly|bytedance|aweme|ttwebview|zhiliaoapp|snssdk/.test(userAgent);
 }
 
+const CHECKOUT_RESUME_MESSAGE = 'LEISH_CHECKOUT_RESUME_CHECKOUT';
+
+function isEmbeddedPage() {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
+function checkoutResumeUrl() {
+  const url = new URL(window.location.href);
+  [
+    'checkout_session_id',
+    'payment_intent_id',
+    'payment_intent_client_secret',
+    'redirect_status',
+    'tiktok',
+  ].forEach((key) => url.searchParams.delete(key));
+  url.hash = 'checkout';
+  return url.toString();
+}
+
+function preserveCheckoutResume() {
+  const resumeUrl = checkoutResumeUrl();
+  window.history.replaceState(null, '', resumeUrl);
+
+  if (isEmbeddedPage()) {
+    try {
+      window.parent.postMessage({ type: CHECKOUT_RESUME_MESSAGE }, '*');
+    } catch {
+    }
+  }
+}
+
 function ApplePayMark() {
   return (
     <span className="applePayMark" aria-label="Apple Pay">
@@ -504,6 +539,7 @@ function CheckoutBox({ onComplete }) {
 
   const openTikTokHelp = React.useCallback(() => {
     trackEvent('TikTok Wallet Fallback Clicked');
+    preserveCheckoutResume();
     setShowTikTokHelp(true);
   }, []);
 
